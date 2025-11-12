@@ -1,0 +1,21 @@
+---
+title: "Wine Project"
+author:
+  - name: "Sergio Martinez Barajas"
+  - name: "Sarah Marie Jennings"
+date: today
+format: pdf
+---
+
+
+```{python}
+#| label: python setup
+#| include: false
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split, KFold, cross_validate
+from sklearn.metrics import r2_score, mean_absolute_error, root_mean_squared_error, make_scorer
+from plotnine import *
+import matplotlib.pyplot as plt
+```
