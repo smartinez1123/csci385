@@ -19,3 +19,28 @@ from sklearn.metrics import r2_score, mean_absolute_error, root_mean_squared_err
 from plotnine import *
 import matplotlib.pyplot as plt
 ```
+
+```{python}
+grapes = pd.read_csv("us-grape-production.csv")
+temps = pd.read_csv("filtered-temp.csv")
+
+grapes = grapes.rename(columns={
+"Grapes | 00000560 || Production | 005510 || tonnes": "Grape_Production_tonnes"
+})
+
+grapes = grapes[(grapes["Year"] >= 1961) & (grapes["Year"] <= 2023)]
+temps = temps[(temps["Year"] >= 1961) & (temps["Year"] <= 2023)]
+
+merged = pd.merge(grapes, temps, on="Year")
+(
+ggplot(merged, aes(x="Average_Fahrenheit_Temperature", y="Grape_Production_tonnes")) +
+geom_point(color="purple") +
+geom_smooth(method="lm", color="black") +
+labs(
+title="U.S. Grape Production vs. Average Temperature (1961–2023)",
+x="Average Temperature (°F)",
+y="Grape Production (tonnes)"
+) +
+theme_minimal()
+)
+```
