@@ -44,3 +44,54 @@ y="Grape Production (tonnes)"
 theme_minimal()
 )
 ```
+
+
+```{python}
+#Correlation analysis
+corr = merged["Average_Fahrenheit_Temperature"].corr(merged["Grape_Production_tonnes"])
+print("Correlation:", corr)
+
+```
+what the correlation means is that there tends to be possitive correlation between average yealy temeprture and grape yield, but it's not very strong.
+
+
+```{python}
+#linear regression
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+X = merged["Average_Fahrenheit_Temperature"].values.reshape(-1, 1)
+y = merged["Grape_Production_tonnes"].values
+
+model = LinearRegression()
+model.fit(X, y)
+
+print("Slope (coefficient):", model.coef_[0])
+print("Intercept:", model.intercept_)
+print("R² score:", model.score(X, y))
+
+```
+slope means that for every 1 F increase we get 540k tonnes increase yield but propably because temperature is average across all US, grape production is national total, there are other possible factors at work
+R^2 = 0.326 means that temperture explains 32% of the variation in grape yields, which means that a whole 2/3rds of variablility is caused by something else. 
+
+
+Both temp and yield increase overtime so this might make false impressions. It's not that more heat = more grapes, it could be more time = more grapes and more heat. So if we detrend the data to see if the correlation still exisits. 
+```{python}
+merged["Year_centered"] = merged["Year"] - merged["Year"].mean()
+
+# detrend
+from sklearn.linear_model import LinearRegression
+
+# detrend temperature
+m1 = LinearRegression().fit(merged[["Year_centered"]], merged["Average_Fahrenheit_Temperature"])
+merged["Temp_detrended"] = merged["Average_Fahrenheit_Temperature"] - m1.predict(merged[["Year_centered"]])
+
+# detrend yield
+m2 = LinearRegression().fit(merged[["Year_centered"]], merged["Grape_Production_tonnes"])
+merged["Yield_detrended"] = merged["Grape_Production_tonnes"] - m2.predict(merged[["Year_centered"]])
+
+merged["Temp_detrended"].corr(merged["Yield_detrended"])
+```
+
+
+After detrending the data we see that correlation is bascially 0. So temp and grape yield have almost nothing to do with each other.
