@@ -4,7 +4,10 @@ author:
   - name: "Sergio Martinez Barajas"
   - name: "Sarah Marie Jennings"
 date: today
-format: pdf
+format:
+ pdf:
+  execute:
+   error: false
 ---
 
 
@@ -15,10 +18,11 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split, KFold, cross_validate
-from sklearn.metrics import r2_score, mean_absolute_error, root_mean_squared_error, make_scorer
+# from sklearn.metrics import r2_score, mean_absolute_error, root_mean_squared_error, make_scorer
 from plotnine import *
 import matplotlib.pyplot as plt
 import warnings
+# import numpy as np
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 ```
 
@@ -60,17 +64,27 @@ what the correlation means is that there tends to be possitive correlation betwe
 ```{python}
 #linear regression
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
 
 X = merged["Average_Fahrenheit_Temperature"].values.reshape(-1, 1)
-y = merged["Grape_Production_tonnes"].values
+Y = merged["Grape_Production_tonnes"].values
+
+
+X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size = 0.2, shuffle = True, random_state=42)
 
 model = LinearRegression()
-model.fit(X, y)
+model.fit(X_train, Y_train)
 
-print("Slope (coefficient):", model.coef_[0])
-print("Intercept:", model.intercept_)
-print("R² score:", model.score(X, y))
+Y_pred = model.predict(X_test)
+
+mae = mean_absolute_error(Y_test, Y_pred)
+rmse = np.sqrt(mean_squared_error(Y_test, Y_pred))
+r2 = r2_score(Y_test, Y_pred)
+
+print("MAE: ", mae)
+print("RMSE: ", rmse)
+print("R^2: ", r2)
 
 ```
 slope means that for every 1 F increase we get 540k tonnes increase yield but propably because temperature is average across all US, grape production is national total, there are other possible factors at work
