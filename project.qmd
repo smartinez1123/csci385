@@ -140,3 +140,23 @@ print(county_stats)
 ```
 
 So right here we're looking at the counties that harvest the most winegrapes. Doesn't really tell us anything
+
+
+```{python}
+
+for county in merged["County"].unique():
+    sub = merged[merged["County"] == county]
+
+    if len(sub) > 1:  # must have multiple years to plot
+        plt.figure()
+        plt.plot(sub["Year"], sub["HarvestedAcres"], marker="o")
+        plt.title(f"Harvested Acres Over Time — {county}")
+        plt.xlabel("Year")
+        plt.ylabel("Harvested Acres")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+```
+
+
+My theory that maybe somehow droughts and heatwaves are effecting yield is based on nothing. There is no patter or corelaion that I can see between the graphs and the dates of major droughts and heatwaves that I can see. At this point i have to a question. Is everything we've heard anecdotal? I mean to say that grape farmers are saying that it's getting harder to keep farming grapes, but so long as they keep watering their grapes, does the heat really impact them at all? I'm gonna ask my farmer friend and see what he tells me
