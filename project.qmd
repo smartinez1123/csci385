@@ -174,3 +174,28 @@ for county in merged["County"].unique():
 
 
 My theory that maybe somehow droughts and heatwaves are effecting yield is based on nothing. There is no patter or corelaion that I can see between the graphs and the dates of major droughts and heatwaves that I can see. At this point i have to a question. Is everything we've heard anecdotal? I mean to say that grape farmers are saying that it's getting harder to keep farming grapes, but so long as they keep watering their grapes, does the heat really impact them at all? I'm gonna ask my farmer friend and see what he tells me
+
+
+```{python}
+temps = pd.read_csv("yearly_temps.csv")
+
+data = grapes[['Year', 'Yield(Unit/Acre)']]
+
+df = pd.merge(grapes[['Year', 'Yield(Unit/Acre)']], temps, on='Year', how='inner')
+
+df = df.dropna(subset=['Yield(Unit/Acre)', 'MaxTemp'])
+
+X = df[['MaxTemp']]
+Y = df['Yield(Unit/Acre)']
+
+model = LinearRegression()
+model.fit(X,Y)
+
+y_pred = model.predict(X)
+
+print("Slope:", model.coef_[0])
+print("Intercept:", model.intercept_)
+print("R^2:", r2_score(Y, y_pred))
+print("RMSE:", np.sqrt(mean_squared_error(Y, y_pred)))
+print("MAE:", mean_absolute_error(Y, y_pred))
+```
