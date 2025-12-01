@@ -199,3 +199,20 @@ print("R^2:", r2_score(Y, y_pred))
 print("RMSE:", np.sqrt(mean_squared_error(Y, y_pred)))
 print("MAE:", mean_absolute_error(Y, y_pred))
 ```
+
+```{python}
+import statsmodels.api as sm
+from scipy.stats import pearsonr
+
+r, p_value_corr = pearsonr(df['MaxTemp'], df['Yield(Unit/Acre)'])
+
+print("Correlation r:", r)
+print("p-value:", p_value_corr)
+
+X = sm.add_constant(df['MaxTemp'])
+Y = df['Yield(Unit/Acre)']
+
+model = sm.OLS(Y, X).fit()
+
+print(model.summary())
+```
