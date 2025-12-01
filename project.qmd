@@ -18,6 +18,8 @@ from sklearn.model_selection import train_test_split, KFold, cross_validate
 from sklearn.metrics import r2_score, mean_absolute_error, root_mean_squared_error, make_scorer
 from plotnine import *
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 ```
 
 ```{python}
@@ -95,3 +97,46 @@ merged["Temp_detrended"].corr(merged["Yield_detrended"])
 
 
 After detrending the data we see that correlation is bascially 0. So temp and grape yield have almost nothing to do with each other.
+
+
+```{python}
+####################################################
+#### From here on out we're only using Cal Data ####
+####################################################
+
+grapes = pd.read_csv("Californa_Wine_Production_1980_2020.csv")
+temp = pd.read_csv("California-avg-temp-1980-2021.csv")
+rain = pd.read_csv("California-rain-1980-2021.csv")
+
+# trim to overlapping years
+grapes = grapes[(grapes["Year"] >= 1980) & (grapes["Year"] <= 2020)]
+temp = temp[(temp["Year"] >= 1980) & (temp["Year"] <= 2020)]
+rain = rain[(rain["Year"] >= 1980) & (rain["Year"] <= 2020)]
+
+# merge
+merged = grapes.merge(temp, on="Year").merge(rain, on="Year")
+
+merged = merged.rename(columns={
+    "Temp": "AvgTemp_F",
+    "rain_in": "Rain_in"
+})
+merged[["Yield(Unit/Acre)", "AvgTemp_F", "Rain_in"]].corr()
+
+```
+What this means is that temp and percipitaion have almost no impact on yield. Although let it be known that in our lit review it did say that percipitaion almost never has an impact on yields, so that's at least 1 thing proven. Temp and rain have a negative correlation, when it rains it's colder and when hot there's less rain, but it's really weak
+
+
+
+```{python}
+county_stats = merged.groupby("County").agg({
+    "Yield(Unit/Acre)": "mean",
+    "HarvestedAcres": "mean",
+    "AvgTemp_F": "mean",
+    "Rain_in": "mean"
+}).sort_values(by="HarvestedAcres", ascending=False)
+
+print(county_stats)
+
+```
+
+So right here we're looking at the counties that harvest the most winegrapes. Doesn't really tell us anything
